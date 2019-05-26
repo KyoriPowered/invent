@@ -1,0 +1,44 @@
+plugins {
+  id 'java-gradle-plugin'
+  id 'maven'
+  id 'com.gradle.plugin-publish' version '0.10.1'
+  id 'net.minecrell.licenser' version '0.4.1'
+}
+
+group 'net.kyori'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+license {
+  header project.file('header.txt')
+  include '**/*.java'
+  newLine false
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+  implementation gradleApi()
+}
+
+pluginBundle {
+  website = 'https://github.com/KyoriPowered/invent/'
+  vcsUrl = 'https://github.com/KyoriPowered/invent/'
+  tags = ['common']
+}
+
+gradlePlugin {
+  plugins {
+    invent {
+      id = 'net.kyori.invent'
+      displayName = 'Invent'
+      description = 'A plugin to reduce project boilerplate.'
+      implementationClass = 'net.kyori.invent.InventPlugin'
+    }
+  }
+}
