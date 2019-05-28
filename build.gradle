@@ -29,7 +29,7 @@ dependencies {
 pluginBundle {
   website = 'https://github.com/KyoriPowered/invent/'
   vcsUrl = 'https://github.com/KyoriPowered/invent/'
-  tags = ['common']
+  tags = ['common', 'boilerplate']
 }
 
 gradlePlugin {
@@ -44,12 +44,14 @@ gradlePlugin {
     inventJavadocJar {
       id = 'net.kyori.invent-javadoc-jar'
       displayName = 'invent-javadoc-jar'
+      description = 'A plugin which adds a task to create a JAR containing generated javadocs.'
       implementationClass = 'net.kyori.invent.JavadocJarPlugin'
     }
 
     inventSourcesJar {
       id = 'net.kyori.invent-sources-jar'
       displayName = 'invent-sources-jar'
+      description = 'A plugin which adds a task to create a JAR containing sources.'
       implementationClass = 'net.kyori.invent.SourcesJarPlugin'
     }
   }
