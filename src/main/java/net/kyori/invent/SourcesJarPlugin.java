@@ -27,6 +27,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -38,6 +39,9 @@ public class SourcesJarPlugin implements Plugin<Project> {
 
   @Override
   public void apply(final Project project) {
+    final PluginContainer plugins = project.getPlugins();
+    plugins.apply(JavaPlugin.class);
+
     final TaskContainer tasks = project.getTasks();
     final JavaPluginConvention jpc = project.getConvention().getPlugin(JavaPluginConvention.class);
     final SourceSet mss = jpc.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
