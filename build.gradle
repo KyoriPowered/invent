@@ -36,9 +36,21 @@ gradlePlugin {
   plugins {
     invent {
       id = 'net.kyori.invent'
-      displayName = 'Invent'
+      displayName = 'invent'
       description = 'A plugin to reduce project boilerplate.'
       implementationClass = 'net.kyori.invent.InventPlugin'
+    }
+
+    inventJavadocJar {
+      id = 'net.kyori.invent-javadoc-jar'
+      displayName = 'invent-javadoc-jar'
+      implementationClass = 'net.kyori.invent.JavadocJarPlugin'
+    }
+
+    inventSourcesJar {
+      id = 'net.kyori.invent-sources-jar'
+      displayName = 'invent-sources-jar'
+      implementationClass = 'net.kyori.invent.SourcesJarPlugin'
     }
   }
 }
