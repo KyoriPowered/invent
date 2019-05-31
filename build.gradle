@@ -54,5 +54,12 @@ gradlePlugin {
       description = 'A plugin which adds a task to create a JAR containing sources.'
       implementationClass = 'net.kyori.invent.SourcesJarPlugin'
     }
+
+    inventSonatypeRepository {
+      id = 'net.kyori.invent-sonatype-repository'
+      displayName = 'invent-sonatype-repository'
+      description = 'A plugin which adds a maven-publish repository for Sonatype.'
+      implementationClass = 'net.kyori.invent.SonatypeRepositoryPlugin'
+    }
   }
 }
