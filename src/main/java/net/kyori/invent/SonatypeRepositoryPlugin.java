@@ -48,10 +48,10 @@ public class SonatypeRepositoryPlugin implements Plugin<Project> {
     final PluginContainer plugins = project.getPlugins();
     plugins.apply(PublishingPlugin.class);
 
-    if(project.hasProperty(PROPERTY_USERNAME) && project.hasProperty(PROPERTY_PASSWORD)) {
-      final ExtensionContainer extensions = project.getExtensions();
-      extensions.create(EXTENSION_NAME, SonatypeRepositoryExtension.class);
+    final ExtensionContainer extensions = project.getExtensions();
+    extensions.create(EXTENSION_NAME, SonatypeRepositoryExtension.class);
 
+    if(project.hasProperty(PROPERTY_USERNAME) && project.hasProperty(PROPERTY_PASSWORD)) {
       project.afterEvaluate(this.afterEvaluate());
     } else {
       project.getLogger().debug("Cannot add {} repository for publication - '{}' and '{}' properties are not defined.", REPOSITORY_NAME, PROPERTY_USERNAME, PROPERTY_PASSWORD);
@@ -75,6 +75,8 @@ public class SonatypeRepositoryPlugin implements Plugin<Project> {
             credentials.setPassword((String) project.property(PROPERTY_PASSWORD));
           });
         });
+      } else {
+        project.getLogger().debug("Cannot add {} repository for publication - it has been disabled.", REPOSITORY_NAME);
       }
     };
   }
