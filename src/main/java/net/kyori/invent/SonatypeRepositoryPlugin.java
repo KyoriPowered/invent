@@ -23,6 +23,7 @@
  */
 package net.kyori.invent;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
@@ -32,6 +33,8 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.plugins.PublishingPlugin;
 
 public class SonatypeRepositoryPlugin implements Plugin<Project> {
+  private static final String EXTENSION_NAME = "inventSonatypeRepository";
+
   private static final String REPOSITORY_NAME = "sonatype";
 
   private static final String REPOSITORY_URL_RELEASE_STAGING = "https://oss.sonatype.org/service/local/staging/deploy/maven2/";
@@ -47,21 +50,33 @@ public class SonatypeRepositoryPlugin implements Plugin<Project> {
 
     if(project.hasProperty(PROPERTY_USERNAME) && project.hasProperty(PROPERTY_PASSWORD)) {
       final ExtensionContainer extensions = project.getExtensions();
-      final PublishingExtension publishing = extensions.getByType(PublishingExtension.class);
+      extensions.create(EXTENSION_NAME, SonatypeRepositoryExtension.class);
 
-      final RepositoryHandler repositories = publishing.getRepositories();
-
-      repositories.maven(repository -> {
-        repository.setName(REPOSITORY_NAME);
-        repository.setUrl(this.isSnapshot(project) ? REPOSITORY_URL_SNAPSHOT : REPOSITORY_URL_RELEASE_STAGING);
-        repository.credentials(credentials -> {
-          credentials.setUsername((String) project.property(PROPERTY_USERNAME));
-          credentials.setPassword((String) project.property(PROPERTY_PASSWORD));
-        });
-      });
+      project.afterEvaluate(this.afterEvaluate());
     } else {
       project.getLogger().debug("Cannot add {} repository for publication - '{}' and '{}' properties are not defined.", REPOSITORY_NAME, PROPERTY_USERNAME, PROPERTY_PASSWORD);
     }
+  }
+
+  private Action<Project> afterEvaluate() {
+    return project -> {
+      final ExtensionContainer extensions = project.getExtensions();
+      final SonatypeRepositoryExtension sonatype = extensions.getByType(SonatypeRepositoryExtension.class);
+      if(sonatype.isEnabled()) {
+        final PublishingExtension publishing = extensions.getByType(PublishingExtension.class);
+
+        final RepositoryHandler repositories = publishing.getRepositories();
+
+        repositories.maven(repository -> {
+          repository.setName(REPOSITORY_NAME);
+          repository.setUrl(this.isSnapshot(project) ? REPOSITORY_URL_SNAPSHOT : REPOSITORY_URL_RELEASE_STAGING);
+          repository.credentials(credentials -> {
+            credentials.setUsername((String) project.property(PROPERTY_USERNAME));
+            credentials.setPassword((String) project.property(PROPERTY_PASSWORD));
+          });
+        });
+      }
+    };
   }
 
   private boolean isSnapshot(final Project project) {
