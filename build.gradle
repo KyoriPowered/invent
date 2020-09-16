@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'net.kyori'
-version '1.0.4'
+version '2.0.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -41,18 +41,11 @@ gradlePlugin {
       implementationClass = 'net.kyori.invent.InventPlugin'
     }
 
-    inventJavadocJar {
-      id = 'net.kyori.invent-javadoc-jar'
-      displayName = 'invent-javadoc-jar'
-      description = 'A plugin which adds a task to create a JAR containing generated javadocs.'
-      implementationClass = 'net.kyori.invent.JavadocJarPlugin'
-    }
-
-    inventSourcesJar {
-      id = 'net.kyori.invent-sources-jar'
-      displayName = 'invent-sources-jar'
-      description = 'A plugin which adds a task to create a JAR containing sources.'
-      implementationClass = 'net.kyori.invent.SourcesJarPlugin'
+    inventPublishing {
+      id = 'net.kyori.invent-publishing'
+      displayName = 'invent-publishing'
+      description = 'A plugin to reduce maven publishing boilerplate.'
+      implementationClass = 'net.kyori.invent.InventPublishingPlugin'
     }
 
     inventSonatypeRepository {

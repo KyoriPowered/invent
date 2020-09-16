@@ -23,21 +23,24 @@
  */
 package net.kyori.invent;
 
+import java.util.List;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.compile.CompileOptions;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
-
-import java.util.List;
 
 public class InventPlugin implements Plugin<Project> {
   private static final String COMPILE_ENCODING = "UTF-8";
@@ -51,33 +54,28 @@ public class InventPlugin implements Plugin<Project> {
   public void apply(final Project project) {
     final PluginContainer plugins = project.getPlugins();
     plugins.apply(JavaBasePlugin.class);
+    plugins.apply(JavaPlugin.class);
 
     final Convention convention = project.getConvention();
-    this.configureJavaPluginConvention(convention.getPlugin(JavaPluginConvention.class));
-
+    final ExtensionContainer extensions = project.getExtensions();
     final TaskContainer tasks = project.getTasks();
+
+    final JavaPluginConvention jpc = convention.getPlugin(JavaPluginConvention.class);
+    final JavaPluginExtension jpe = extensions.getByType(JavaPluginExtension.class);
+
+    this.configureJavaPluginConvention(jpc);
     this.configureJavaCompile(tasks);
     this.configureJavadoc(tasks);
     this.configureTest(tasks);
+    this.configureJavadocAndSourcesJars(jpc, jpe, tasks);
   }
 
-  /*
-   * sourceCompatibility = JavaVersion.VERSION_1_8
-   * targetCompatibility = JavaVersion.VERSION_1_8
-   */
   private void configureJavaPluginConvention(final JavaPluginConvention convention) {
     final JavaVersion version = JavaVersion.VERSION_1_8;
     convention.setSourceCompatibility(version);
     convention.setTargetCompatibility(version);
   }
 
-  /*
-   * tasks.withType(JavaCompile) {
-   *   options.compilerArgs += ['-parameters']
-   *   options.deprecation = true
-   *   options.encoding = 'UTF-8'
-   * }
-   */
   private void configureJavaCompile(final TaskContainer tasks) {
     tasks.withType(JavaCompile.class).configureEach(task -> {
       final CompileOptions options = task.getOptions();
@@ -90,13 +88,6 @@ public class InventPlugin implements Plugin<Project> {
     });
   }
 
-  /*
-   * javadoc {
-   *   options.charSet = 'UTF-8'
-   *   options.encoding = 'UTF-8'
-   *   options.addBooleanOption('html5', true)
-   * }
-   */
   private void configureJavadoc(final TaskContainer tasks) {
     tasks.withType(Javadoc.class).configureEach(task -> {
       task.options(options -> {
@@ -113,12 +104,18 @@ public class InventPlugin implements Plugin<Project> {
     });
   }
 
-  /*
-   * test {
-   *   useJUnitPlatform()
-   * }
-   */
   private void configureTest(final TaskContainer tasks) {
     tasks.withType(Test.class).configureEach(Test::useJUnitPlatform);
+  }
+
+  private void configureJavadocAndSourcesJars(final JavaPluginConvention convention, final JavaPluginExtension extension, final TaskContainer tasks) {
+    extension.withJavadocJar();
+    extension.withSourcesJar();
+
+    final SourceSet mainSourceSet = convention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+    tasks.named(JavaBasePlugin.BUILD_TASK_NAME).configure(task -> task.dependsOn(
+      tasks.named(mainSourceSet.getJavadocJarTaskName()),
+      tasks.named(mainSourceSet.getSourcesJarTaskName())
+    ));
   }
 }

@@ -21,36 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.invent;
+package net.kyori.invent.data;
 
-import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.tasks.TaskContainer;
-import org.gradle.api.tasks.TaskProvider;
-import org.gradle.jvm.tasks.Jar;
+public class License {
+  private final String name;
+  private final String url;
 
-import java.util.function.Consumer;
-
-public class Invent {
-  private static final String ARCHIVES = "archives";
-
-  /**
-   * Registers a task, and allows {@code consumer} to configure it.
-   *
-   * @param tasks the task container
-   * @param name the task name
-   * @param type the task type
-   * @param consumer the task configurer
-   * @param <T> the task type
-   * @return the task provider
-   */
-  public static <T extends Task> TaskProvider<T> registerTask(final TaskContainer tasks, final String name, final Class<T> type, final Consumer<TaskProvider<T>> consumer) {
-    final TaskProvider<T> task = tasks.register(name, type);
-    consumer.accept(task);
-    return task;
+  public License(final String name, final String url) {
+    this.name = name;
+    this.url = url;
   }
 
-  public static void addArchive(final Project project, final TaskProvider<Jar> task) {
-    project.artifacts(artifacts -> artifacts.add(ARCHIVES, task));
+  public String name() {
+    return this.name;
+  }
+
+  public String url() {
+    return this.url;
   }
 }

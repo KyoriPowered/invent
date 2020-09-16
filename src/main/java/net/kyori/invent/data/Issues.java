@@ -21,33 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.invent;
+package net.kyori.invent.data;
 
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.tasks.TaskContainer;
-import org.gradle.api.tasks.TaskProvider;
-import org.gradle.api.tasks.javadoc.Javadoc;
-import org.gradle.jvm.tasks.Jar;
+public interface Issues {
+  String system();
 
-public class JavadocJarPlugin implements Plugin<Project> {
-  public static final String TASK_NAME = "javadocJar";
-  public static final String CLASSIFIER = "javadoc";
-
-  @Override
-  public void apply(final Project project) {
-    final PluginContainer plugins = project.getPlugins();
-    plugins.apply(JavaPlugin.class);
-
-    final TaskContainer tasks = project.getTasks();
-    final Javadoc javadoc = tasks.withType(Javadoc.class).getByName(JavaPlugin.JAVADOC_TASK_NAME);
-    final TaskProvider<Jar> jar = Invent.registerTask(tasks, TASK_NAME, Jar.class, provider -> provider.configure(task -> {
-      task.getArchiveClassifier().set(CLASSIFIER);
-      task.dependsOn(javadoc);
-      task.from(javadoc.getDestinationDir());
-    }));
-    Invent.addArchive(project, jar);
-  }
+  String url();
 }
